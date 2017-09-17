@@ -1,1 +1,4 @@
-veri gut websocket server for esp32
+1. change your ssid and password in main.c
+2. compile and upload
+3. open test_page.htm
+4. check your esp32's ip address and connect
