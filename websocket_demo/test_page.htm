@@ -1,0 +1,115 @@
+<!doctype html>
+
+<head>
+  
+<title>websocket test</title>
+
+</head>
+
+<body >
+   ESP32 ip address: <input id="ip" type="text">
+  <button onclick="buttonfunc()">connect</button><br>
+
+  <input id="slider" type="range" min="1000" max="9999" style="width: 805px;" oninput="sliderfunc()"><br>
+
+  <input id="rslider" type="range" min="-1000" max="-500" style="width: 805px;" oninput="sliderfunc2()"><br>
+
+  <canvas id="myCanvas" width="400" height="250" style="border:1px solid #4B6CFF;"></canvas>
+  <canvas id="myCanvas2" width="400" height="250" style="border:1px solid #4B6CFF;"></canvas>
+</body>
+
+<script type="text/javascript">
+
+
+var socket1;
+var socket2;
+
+var chart_data1 = [];
+var chart_data2 = [];
+var chart_cnt_max = 400;
+
+function buttonfunc ()
+{
+   var ip = document.getElementById("ip").value;
+
+   socket1 = openSocket1 ( ip, 1000 );
+   socket2 = openSocket2 ( ip, 1001 );
+}
+
+setTimeout(myFunction1, 1000);
+function myFunction1() {
+    setTimeout(myFunction1, 1000);
+};
+
+
+function sliderfunc ()
+{
+    if ( socket1.readyState == 1 ){
+        var slider1 = document.getElementById("slider");
+        socket1.send ( slider1.value );
+    }
+};
+function sliderfunc2 ()
+{
+    if ( socket2.readyState == 1 ){
+        var slider2 = document.getElementById("rslider");
+        socket2.send ( slider2.value );
+    }
+};
+
+
+
+var rsilder = document.getElementById("rslider");
+
+function openSocket1( ip, port_num ) {
+  	websocket = new WebSocket( "ws://" + ip + ":" + port_num.toString());
+
+	websocket.onmessage = function (event) {
+
+        for ( var i = 0; i < chart_cnt_max - 1; i++ ){
+            chart_data1[i] = chart_data1[i + 1];
+        }
+
+        chart_data1 [ chart_cnt_max - 1 ] = 250 - (parseInt(event.data) * (250/512));
+
+        var c = document.getElementById("myCanvas");
+        c.width = c.width;
+        var ctx = c.getContext("2d");
+        ctx.moveTo(0,250);
+
+        for ( var i = 0; i < chart_cnt_max - 1; i++ ){
+            ctx.lineTo(i,chart_data1[i]);
+        }
+        ctx.stroke();
+	};
+
+    return websocket;
+};
+
+function openSocket2( ip, port_num ) {
+    websocket = new WebSocket( "ws://" + ip + ":" + port_num.toString());
+
+	websocket.onmessage = function (event) {
+
+        for ( var i = 0; i < chart_cnt_max - 1; i++ ){
+            chart_data2[i] = chart_data2[i + 1];
+        }
+
+        chart_data2 [ chart_cnt_max - 1 ] = 250 - (parseInt(event.data) * (250/512));
+
+        var c = document.getElementById("myCanvas2");
+        c.width = c.width;
+        var ctx = c.getContext("2d");
+        ctx.moveTo(0,250);
+
+        for ( var i = 0; i < chart_cnt_max - 1; i++ ){
+            ctx.lineTo(i,chart_data2[i]);
+        }
+        ctx.stroke();
+	};
+
+    return websocket;
+};
+
+
+</script>
