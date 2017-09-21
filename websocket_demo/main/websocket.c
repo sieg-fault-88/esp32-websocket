@@ -89,6 +89,7 @@ err_t websocket_accept(void *arg, struct tcp_pcb *newpcb, err_t err){
 		tcp_accepted( websocket->listen_conn );
 	}
 	else {
+		tcp_accepted( websocket->listen_conn );
 		tcp_close ( newpcb );
 	}
 
